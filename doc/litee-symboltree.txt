@@ -1,0 +1,207 @@
+*litee-symboltree.nvim* litee-symboltree.nvim
+
+Author:   Louis DeLosSantos <louis.delos@gmail.com>
+Homepage: <https://github.com/ldelossa/litee-symboltree.nvim>
+License:  MIT license
+
+██╗     ██╗████████╗███████╗███████╗   ███╗   ██╗██╗   ██╗██╗███╗   ███╗
+██║     ██║╚══██╔══╝██╔════╝██╔════╝   ████╗  ██║██║   ██║██║████╗ ████║ Lightweight
+██║     ██║   ██║   █████╗  █████╗     ██╔██╗ ██║██║   ██║██║██╔████╔██║ Integrated
+██║     ██║   ██║   ██╔══╝  ██╔══╝     ██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║ Text
+███████╗██║   ██║   ███████╗███████╗██╗██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║ Editing
+╚══════╝╚═╝   ╚═╝   ╚══════╝╚══════╝╚═╝╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝ Environment
+====================================================================================
+CONTENTS                                                 *litee-symboltree-contents*
+
+  1     Intro.........................................|litee-symboltree-intro|
+  2     Usage.........................................|litee-symboltree-usage|
+  2.1    Unified Panel................................|litee-symboltree-unified-panel|  
+  3     Commands......................................|litee-symboltree-commands|
+  4     Mappings......................................|litee-symboltree-mappings|
+  5     Config........................................|litee-symboltree-config|
+  6     Highlights....................................|litee-symboltree-highlights|
+
+====================================================================================
+INTRODUCTION                                                *litee-symboltree-intro*
+
+litee-symboltree utilizes the litee.nvim (https://github.com/ldelossa/litee.nvim) library 
+to implement a tool analogous to VSCode's "Outline" tool. 
+
+This tool exposes an explorable tree of document symbols.
+
+The tree is live and will update as you navigate around your source code.
+
+Like all `litee.nvim` backed plugins the UI will work with other `litee.nvim` plugins, 
+keeping its appropriate place in a collapsible panel.
+
+====================================================================================
+Usage                                                       *litee-symboltree-usage*
+
+First ensure you also have the litee.nvim (https://github.com/ldelossa/litee.nvim) 
+library installed.
+
+litee-symboltree.nvim hooks directly into the LSP infrastructure by hijacking the necessary
+handlers like so:
+
+    vim.lsp.handlers['textDocument/documentSymbol'] = vim.lsp.with(
+                require('litee.lsp.handlers').ws_lsp_handler(), {}
+    )
+
+This occurs when `require('litee.symboltree` is called.
+
+Once the handlers are in place issuing the normal "vim.lsp.buf.document_symbol" function will open the Symboltree UI.
+
+All of LITEE.nvim can be controlled via commands making it possible to navigate
+the Symboltree via key bindings. 
+
+Check out the help file for full details.
+
+Mapping the aformentioned lsp functions to key bindings is adviced and will 
+pop open the `symboltree` UI when invoked.
+
+                                                            *litee-symboltree-panel*
+
+`litee-symboltree` utilizes the `litee.nvim` libray to integrate itself within
+the panel `litee.nvim` exposes.
+
+This means the symboltree UI will share its portion of the panel with other
+`litee.nvim` backed plugin creating a unified panel experience similar to
+IDEs such as JetBrains and VSCode.
+
+The panel is defined and implemented in the `litee.nvim` module and configured
+on its own, this doc will cover some panel basics in the `litee-symboltree-commands`
+and `litee-symboltree-config` sections.
+
+From there check out `litee-commands` to manipulate the UI.
+
+====================================================================================
+COMMANDS                                                   *litee-symboltree-commands*
+
+The `litee.nvim` library proper exports the panel which all `litee.nvim` backed
+plugins which display themselves should utilize.
+
+To toggle the panel open and close use the following command 
+(exported on `require('litee.lib').setup()`)
+
+    -- Toggle the litee.nvim panel open or close.
+    -- When toggled the relative window sizes are reset but the major 
+    -- size (width for left/right, height for top/bottom) are remembered.
+    vim.cmd("command! LTPanel       lua require('litee.ui').toggle_panel()")
+
+    -- Can be used to toggle the panel open and jump directly to the Symboltree 
+    -- panel component. Only valid if a Symboltree is open and "LTCloseSymboltree" has
+    -- not been called on the current tab.
+    vim.cmd("command! LTOpenToSymboltree      lua require('litee.symboltree').open_to()")
+    -- When called on a specific tabpage any symboltree UI will be closed and cleared
+    -- from the panel. Toggling the panel will not open the most recent Symboltree.
+    vim.cmd("command! LTCloseSymboltree       lua require('litee.symboltree').close_symboltree()")
+    -- Similar to "LTCloseSymboltree" but only hides the symboltree UI from the panel. 
+    -- Toggling the panel will open the most recent symboltree once again.
+    vim.cmd("command! LTHideSymboltree        lua require('litee.symboltree').hide_symboltree()")
+    -- Progress the cursor in the symboltree UI forward
+    vim.cmd("command! LTNextSymboltree        lua require('litee.symboltree').navigation('n')")
+    -- Progress the cursor in the symboltree UI backwards
+    vim.cmd("command! LTPrevSymboltree        lua require('litee.symboltree').navigation('p')")
+    -- Expand the symboltree node under the cursor
+    vim.cmd("command! LTExpandSymboltree      lua require('litee.symboltree').expand_symboltree()")
+    -- Collapse the symboltree node under the cursor
+    vim.cmd("command! LTCollapseSymboltree    lua require('litee.symboltree').collapse_symboltree()")
+    -- Collapse all symboltree nodes up to the root.
+    vim.cmd("command! LTCollapseAllSymboltree lua require('litee.symboltree').collapse_all_symboltree()")
+    -- Jump to the source code buffer and line for the symbol under the cursor.
+    vim.cmd("command! LTJumpSymboltree        lua require('litee.symboltree').jump_symboltree()")
+    -- Same as "LTJumpSymboltree" but use a split.
+    vim.cmd("command! LTJumpSymboltreeSplit   lua require('litee.symboltree').jump_symboltree('split')")
+    -- Same as "LTJumpSymboltree" but use a vsplit.
+    vim.cmd("command! LTJumpSymboltreeVSplit  lua require('litee.symboltree').jump_symboltree('vsplit')")
+    -- Same as "LTJumpSymboltree" but use a new tab.
+    vim.cmd("command! LTJumpSymboltreeTab     lua require('litee.symboltree').jump_symboltree('tab')")
+    -- Show LSP hover details for the symboltree node under the cursor.
+    vim.cmd("command! LTHoverSymboltree       lua require('litee.symboltree').hover_symboltree()")
+    -- Show node details for the symboltree node under the cursor.
+    vim.cmd("command! LTDetailsSymboltree     lua require('litee.symboltree').details_symboltree()")
+
+====================================================================================
+MAPPINGS                                                 *litee-symboltree-mappings*
+
+litee-symboltree.nvim creates its own buffers for usage and creates buffer local key maps
+for these windows. 
+
+The following key maps are defined and can be reviewed anytime by pressing "?" in
+a litee-symboltree.nvim window.
+
+    vim.api.nvim_buf_set_keymap(buf, "n", "zo", ":LTExpandSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "zc", ":LTCollapseSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "zM", ":LTCollapseAllSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "<CR>", ":LTJumpSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "s", ":LTJumpSymboltreeSplit<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "v", ":LTJumpSymboltreeVSplit<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "t", ":LTJumpSymboltreeTab<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "i", ":LTHoverSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "d", ":LTDetailsSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "H", ":LTHideSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "X", ":LTCloseSymboltree<CR>", opts)
+
+====================================================================================
+CONFIG                                                     *litee-symboltree-config*
+
+`litee-symboltree.nvim` is dependent on the `litee.nvim` library and will not
+export any commands unless this depedency is present. 
+
+Ensure the `litee.lib` can be correctly imported for `litee-symboltree.nvim` to
+work correctly.
+
+The config table is described below:
+
+    M.config = {
+        -- the jump_mode used for jumping from
+        -- symboltree node to source code line. 
+        -- "invoking" will use the last window that invoked the symboltree (feels natural)
+        -- "neighbor" will use the closest neighbor opposite to the panel orientation 
+        -- (if panel is left, uses window to the right.)
+        jump_mode = "invoking",
+        -- enables hiding the cursor inside the Symboltree UI.
+        hide_cursor = true,
+        -- sets a scrolloff when inside the Symboltree UI so contents
+        -- are always centered.
+        scrolloff = true,
+        -- Maps arrow keys to resizing the Symboltree UI within the `litee.nvim` Panel.
+        map_resize_keys = true,
+        -- Disables all highlighting.
+        no_hls = false,
+        -- Disables automatic highlighting of source code buffer lines when the cursor
+        -- is on a Symboltree node.
+        auto_highlight = true,
+    }
+
+Any overrides to this table can be supplied in the setup function:
+    `require('litee.symboltree').setup({no_hls = true})`
+
+The above is an example of turning off all highlights but leaving all
+other values their default.
+
+To customize the panel orientation, notifications, etc... you should
+configure `litee.lib` to your liking. For example:
+
+    require('litee.lib').setup({
+        tree = {
+            icon_set = "codicons"
+        },
+        panel = {
+            orientation = "left",
+            panel_size  = 30
+        }
+    })
+
+See (:h litee-config) for full details on configuring the litee.nvim library.
+
+For an example configuration with suggested keymaps refer to my dotfiles:
+https://github.com/ldelossa/dotfiles/blob/master/nvim/lua/configs/litee.lua
+
+====================================================================================
+Highlights                                             *litee-symboltree-highlights*
+
+All highlights used in the symboltree UI are exported by the 
+`litee.lib.highlights` module. 
+
+See (:h litee-highlights) for more details.
