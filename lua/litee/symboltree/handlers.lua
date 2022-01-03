@@ -1,7 +1,7 @@
 local lib_state         = require('litee.lib.state')
 local lib_panel         = require('litee.lib.panel')
 local lib_tree          = require('litee.lib.tree')
-local lib_lsp           = require('litee.lib.lsp')
+local lib_tree_node     = require('litee.lib.tree.node')
 local lib_util          = require('litee.lib.util')
 local lib_notify        = require('litee.lib.notify')
 
@@ -14,6 +14,47 @@ local function keyify(document_symbol)
                     document_symbol.range.start.line
         return key
     end
+end
+
+function M.build_recursive_symbol_tree(depth, document_symbol, parent, prev_depth_table)
+        local node = lib_tree_node.new_node(
+            document_symbol.name,
+            keyify(document_symbol),
+            depth
+        )
+        node.document_symbol = document_symbol
+        if parent == nil then
+            -- if this node has no parents, its actually the synthetic document_symbol
+            -- we use to build this tree. it contains a .uri field which each child
+            -- will attach to itself recursively from here on.
+            node.location = {
+                uri = document_symbol.uri,
+                range = node.document_symbol.selectionRange
+            }
+        end
+        -- if we have a previous depth table search it for an old reference of self
+        -- and set expanded state correctly.
+        if prev_depth_table ~= nil and prev_depth_table[depth] ~= nil then
+            for _, child in ipairs(prev_depth_table[depth]) do
+                if child.key == node.key then
+                    node.expanded = child.expanded
+                end
+            end
+        end
+        if parent ~= nil then
+            -- the parent will be carrying the uri for the document symbol tree we are building.
+            node.location = {
+                uri = parent.location.uri,
+                range = node.document_symbol.selectionRange
+            }
+            table.insert(parent.children, node)
+        end
+        if document_symbol.children ~= nil then
+            for _, child_document_symbol in ipairs(document_symbol.children) do
+            M.build_recursive_symbol_tree(depth+1, child_document_symbol, node, prev_depth_table)
+            end
+        end
+        return node
 end
 
 -- ds_lsp_handler handles the initial request for building
@@ -73,7 +114,7 @@ M.ds_lsp_handler = function()
             detail = "file"
         }
 
-        local root = lib_lsp.build_recursive_symbol_tree(0, synthetic_root_ds, nil, prev_depth_table)
+        local root = M.build_recursive_symbol_tree(0, synthetic_root_ds, nil, prev_depth_table)
 
         lib_tree.add_node(state.tree, root, nil, true)
 

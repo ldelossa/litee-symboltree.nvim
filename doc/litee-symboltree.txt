@@ -204,4 +204,4 @@ Highlights                                             *litee-symboltree-highlig
 All highlights used in the symboltree UI are exported by the 
 `litee.lib.highlights` module. 
 
-See (:h litee-highlights) for more details.
+See (:h litee-lib-highlights) for more details.
