@@ -4,7 +4,7 @@ local lib_icons = require('litee.lib.icons')
 local M = {}
 
 -- marshal_func is a function which returns the necessary
--- values for marshalling a calltree node into a buffer
+-- values for marshalling a symboltree node into a buffer
 -- line.
 function M.marshal_func(node)
     local icon_set = nil

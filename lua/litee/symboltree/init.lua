@@ -7,11 +7,13 @@ local lib_util      = require('litee.lib.util')
 local lib_util_win  = require('litee.lib.util.window')
 local lib_notify    = require('litee.lib.notify')
 local lib_details   = require('litee.lib.details')
+local lib_lsp       = require('litee.lib.lsp')
 
-local symboltree_buf  = require('litee.symboltree.buffer')
-local marshal_func  = require('litee.symboltree.marshal').marshal_func
-local detail_func   = require('litee.symboltree.details').details_func
-local config        = require('litee.symboltree.config').config
+local symboltree_buf        = require('litee.symboltree.buffer')
+local symboltree_help_buf   = require('litee.symboltree.help_buffer')
+local marshal_func          = require('litee.symboltree.marshal').marshal_func
+local detail_func           = require('litee.symboltree.details').details_func
+local config                = require('litee.symboltree.config').config
 
 local M = {}
 
@@ -118,7 +120,7 @@ function M.collapse_symboltree()
         ctx.cursor == nil or
         ctx.state["symboltree"].tree == nil
     then
-        lib_notify.notify_popup_with_timeout("Must perform an call hierarchy LSP request first", 1750, "error")
+        lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
     end
     ctx.node.expanded = false
@@ -138,7 +140,7 @@ function M.collapse_all_symboltree()
         ctx.cursor == nil or
         ctx.state["symboltree"].tree == nil
     then
-        lib_notify.notify_popup_with_timeout("Must perform an call hierarchy LSP request first", 1750, "error")
+        lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
     end
     local root = lib_tree.get_tree(ctx.state["symboltree"].tree).root
@@ -160,7 +162,7 @@ function M.expand_symboltree()
         ctx.cursor == nil or
         ctx.state["symboltree"].tree == nil
     then
-        lib_notify.notify_popup_with_timeout("Must perform an call hierarchy LSP request first", 1750, "error")
+        lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
     end
     if not ctx.node.expanded then
@@ -181,7 +183,7 @@ M.jump_symboltree = function(split)
         ctx.cursor == nil or
         ctx.state["symboltree"].tree == nil
     then
-        lib_notify.notify_popup_with_timeout("Must perform an call hierarchy LSP request first", 1750, "error")
+        lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
     end
     local location = ctx.node.location
@@ -234,14 +236,14 @@ function M.navigation(dir)
     vim.cmd("redraw!")
 end
 
-M.hover_symboltree = function()
+function M.hover_symboltree()
     local ctx = ui_req_ctx()
     if
         ctx.state == nil or
         ctx.cursor == nil or
         ctx.state["symboltree"].tree == nil
     then
-        lib_notify.notify_popup_with_timeout("Must perform an call hierarchy LSP request first", 1750, "error")
+        lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
     end
     local params = lib_util.resolve_hover_params(ctx.node)
@@ -257,17 +259,34 @@ M.hover_symboltree = function()
     )
 end
 
-M.details_symboltree = function()
+function M.details_symboltree()
     local ctx = ui_req_ctx()
     if
         ctx.state == nil or
         ctx.cursor == nil or
         ctx.state["symboltree"].tree == nil
     then
-        lib_notify.notify_popup_with_timeout("Must perform an call hierarchy LSP request first", 1750, "error")
+        lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
     end
     lib_details.details_popup(ctx.state, ctx.node, detail_func)
+end
+
+function M.help(display)
+    local ctx = ui_req_ctx()
+    if
+        ctx.state == nil or
+        ctx.cursor == nil or
+        ctx.state["symboltree"].tree == nil
+    then
+        lib_notify.notify_popup_with_timeout("Must open a symboltree first with LTOpensymboltree command", 1750, "error")
+        return
+    end
+    if display then
+        vim.api.nvim_win_set_buf(ctx.state["symboltree"].win, symboltree_help_buf.help_buffer)
+    else
+        vim.api.nvim_win_set_buf(ctx.state["symboltree"].win, ctx.state["symboltree"].buf)
+    end
 end
 
 function M.on_tab_closed(tab)
@@ -323,7 +342,7 @@ function M.setup(user_config)
     end
 
     if not pcall(require, "litee.lib") then
-        lib_notify.notify_popup_with_timeout("Cannot start litee-filetree without the litee.lib library.", 1750, "error")
+        lib_notify.notify_popup_with_timeout("Cannot start litee-symboltree without the litee.lib library.", 1750, "error")
         return
     end
 

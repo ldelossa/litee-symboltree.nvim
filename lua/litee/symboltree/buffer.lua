@@ -5,7 +5,7 @@ local lib_util_buf = require('litee.lib.util.buffer')
 local M = {}
 
 -- _setup_buffer performs an idempotent creation of
--- a calltree buffer.
+-- a symboltree buffer.
 function M._setup_buffer(name, buf, tab)
     -- see if we can reuse a buffer that currently exists.
     if buf == nil or not vim.api.nvim_buf_is_valid(buf) then
@@ -61,6 +61,7 @@ function M._setup_buffer(name, buf, tab)
     vim.api.nvim_buf_set_keymap(buf, "n", "d", ":LTDetailsSymboltree<CR>", opts)
     vim.api.nvim_buf_set_keymap(buf, "n", "H", ":LTHideSymboltree<CR>", opts)
     vim.api.nvim_buf_set_keymap(buf, "n", "X", ":LTCloseSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "?", ":lua require('litee.symboltree').help(true)<CR>", opts)
 	if config.map_resize_keys then
            lib_util_buf.map_resize_keys(panel_config.orientation, buf, opts)
     end
