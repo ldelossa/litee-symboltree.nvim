@@ -146,7 +146,7 @@ M.source_tracking = function ()
         local node = buf_lines[i]
         if (ctx.linenr[1] - 1) >= node.document_symbol.range["start"].line
             and (ctx.linenr[1] - 1) <= node.document_symbol.range["end"].line
-                and cur_file == lib_util.resolve_absolute_file_path(node)
+                and cur_file == lib_util.absolute_path_from_uri(node.location.uri)
         then
             vim.api.nvim_win_set_cursor(ctx.state["symboltree"].win, {i, 0})
             vim.cmd("redraw!")

@@ -33,7 +33,7 @@ local function ui_req_ctx()
 
     local cursor = nil
     local node = nil
-    if state ~= nil then
+    if state ~= nil and state["symboltree"] ~= nil then
         if state["symboltree"] ~= nil and state["symboltree"].win ~= nil and
             vim.api.nvim_win_is_valid(state["symboltree"].win) then
             cursor = vim.api.nvim_win_get_cursor(state["symboltree"].win)
@@ -81,6 +81,12 @@ end
 -- component temporarily (not removing the tree from memory)
 function M.close_symboltree()
     local ctx = ui_req_ctx()
+    if
+        ctx.state == nil or
+        ctx.state["symboltree"] == nil
+    then
+        return
+    end
     if ctx.state["symboltree"].win ~= nil then
         if vim.api.nvim_win_is_valid(ctx.state["symboltree"].win) then
             vim.api.nvim_win_close(ctx.state["symboltree"].win, true)
@@ -100,7 +106,10 @@ end
 -- on panel toggle the symboltree will be restored.
 function M.hide_symboltree()
     local ctx = ui_req_ctx()
-    if ctx.tree_type ~= "symboltree" then
+    if
+        ctx.state == nil or
+        ctx.state["symboltree"] == nil
+    then
         return
     end
     if ctx.state["symboltree"].win ~= nil then
@@ -137,8 +146,7 @@ function M.collapse_all_symboltree()
     local ctx = ui_req_ctx()
     if
         ctx.state == nil or
-        ctx.cursor == nil or
-        ctx.state["symboltree"].tree == nil
+        ctx.state["symboltree"] == nil
     then
         lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
@@ -180,8 +188,7 @@ M.jump_symboltree = function(split)
     local ctx = ui_req_ctx()
     if
         ctx.state == nil or
-        ctx.cursor == nil or
-        ctx.state["symboltree"].tree == nil
+        ctx.state["symboltree"] == nil
     then
         lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
@@ -215,7 +222,10 @@ end
 
 function M.navigation(dir)
     local ctx = ui_req_ctx()
-    if ctx.state == nil or ctx.state["symboltree"] == nil then
+    if
+        ctx.state == nil or
+        ctx.state["symboltree"] == nil
+    then
         return
     end
 
@@ -240,8 +250,7 @@ function M.hover_symboltree()
     local ctx = ui_req_ctx()
     if
         ctx.state == nil or
-        ctx.cursor == nil or
-        ctx.state["symboltree"].tree == nil
+        ctx.state["symboltree"] == nil
     then
         lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
@@ -263,8 +272,7 @@ function M.details_symboltree()
     local ctx = ui_req_ctx()
     if
         ctx.state == nil or
-        ctx.cursor == nil or
-        ctx.state["symboltree"].tree == nil
+        ctx.state["symboltree"] == nil
     then
         lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
@@ -276,8 +284,7 @@ function M.help(display)
     local ctx = ui_req_ctx()
     if
         ctx.state == nil or
-        ctx.cursor == nil or
-        ctx.state["symboltree"].tree == nil
+        ctx.state["symboltree"] == nil
     then
         lib_notify.notify_popup_with_timeout("Must open a symboltree first with LTOpensymboltree command", 1750, "error")
         return
@@ -332,6 +339,8 @@ function M.setup(user_config)
         if not config.no_hls then
             lib_util_win.set_tree_highlights()
         end
+        -- set scrolloff so contents stays centered
+        vim.api.nvim_win_set_option(vim.api.nvim_get_current_win(), "scrolloff", 9999)
     end
 
     -- merge in config

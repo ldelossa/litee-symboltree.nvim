@@ -5,6 +5,8 @@ local lib_tree_node     = require('litee.lib.tree.node')
 local lib_util          = require('litee.lib.util')
 local lib_notify        = require('litee.lib.notify')
 
+local symboltree_au     = require('litee.symboltree.autocmds')
+
 local M = {}
 
 local function keyify(document_symbol)
@@ -132,6 +134,9 @@ M.ds_lsp_handler = function()
         local global_state = lib_state.put_component_state(cur_tabpage, "symboltree", state)
 
         lib_panel.toggle_panel(global_state, true, false)
+
+        -- run source_tracking get initial symboltree update
+        symboltree_au.source_tracking()
 
         -- restore cursor if possible
         if cursor ~= nil then
