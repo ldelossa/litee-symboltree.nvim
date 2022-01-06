@@ -14,6 +14,7 @@ local symboltree_help_buf   = require('litee.symboltree.help_buffer')
 local marshal_func          = require('litee.symboltree.marshal').marshal_func
 local detail_func           = require('litee.symboltree.details').details_func
 local config                = require('litee.symboltree.config').config
+local handlers              = require('litee.symboltree.handlers')
 
 local M = {}
 
@@ -38,7 +39,9 @@ local function ui_req_ctx()
             vim.api.nvim_win_is_valid(state["symboltree"].win) then
             cursor = vim.api.nvim_win_get_cursor(state["symboltree"].win)
         end
-        node = lib_tree.marshal_line(cursor, state["symboltree"].tree)
+        if cursor ~= nil then
+            node = lib_tree.marshal_line(cursor, state["symboltree"].tree)
+        end
     end
 
     return {
@@ -68,10 +71,24 @@ end
 
 function M.open_to()
     local ctx = ui_req_ctx()
-    if ctx.state == nil then
+    if
+        ctx.state == nil or
+        ctx.state["symboltree"] == nil
+    then
         return
     end
     lib_panel.open_to("symboltree", ctx.state)
+end
+
+function M.popout_to()
+    local ctx = ui_req_ctx()
+    if
+        ctx.state == nil or
+        ctx.state["symboltree"] == nil
+    then
+        return
+    end
+    lib_panel.popout_to("symboltree", ctx.state, handlers.source_tracking)
 end
 
 -- close_symboltree will close the symboltree ui in the current tab
@@ -92,12 +109,15 @@ function M.close_symboltree()
             vim.api.nvim_win_close(ctx.state["symboltree"].win, true)
         end
     end
-    ctx.state["symboltree"].win = nil
-
+    if ctx.state["symboltree"].buf ~= nil then
+        if vim.api.nvim_buf_is_valid(ctx.state["symboltree"].buf) then
+            vim.api.nvim_buf_delete(ctx.state["symboltree"].buf, {force = true})
+        end
+    end
     if ctx.state["symboltree"].tree ~= nil then
         lib_tree.remove_tree(ctx.state["symboltree"].tree)
-        ctx.state["symboltree"].tree = nil
     end
+    lib_state.put_component_state(ctx.tab, "symboltree", nil)
 end
 
 -- hide_symboltree will remove the symboltree component from
@@ -359,7 +379,6 @@ function M.setup(user_config)
 
     -- will keep the outline view up to date when moving around buffers.
     vim.cmd([[au TextChanged,BufEnter,BufWritePost,WinEnter * lua require('litee.symboltree.autocmds').refresh_symbol_tree()]])
-    --
     -- will enable symboltree ui tracking with source code lines.
     vim.cmd([[au CursorHold * lua require('litee.symboltree.autocmds').source_tracking()]])
 
