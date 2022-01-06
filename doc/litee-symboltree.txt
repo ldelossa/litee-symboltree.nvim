@@ -92,6 +92,8 @@ To toggle the panel open and close use the following command
     -- panel component. Only valid if a Symboltree is open and "LTCloseSymboltree" has
     -- not been called on the current tab.
     vim.cmd("command! LTOpenToSymboltree      lua require('litee.symboltree').open_to()")
+    -- Uses litee.nvim's Popout feature to popout the calltree to a floating window.
+    vim.cmd("command! LTPopOutSymboltree      lua require('litee.symboltree').popout_to()")
     -- When called on a specific tabpage any symboltree UI will be closed and cleared
     -- from the panel. Toggling the panel will not open the most recent Symboltree.
     vim.cmd("command! LTCloseSymboltree       lua require('litee.symboltree').close_symboltree()")
@@ -172,6 +174,9 @@ The config table is described below:
         -- Disables automatic highlighting of source code buffer lines when the cursor
         -- is on a Symboltree node.
         auto_highlight = true,
+        -- Determines if initial creation of a symboltree opens in the
+        -- Panel or in a Popout window. Options are "panel" or "popout"
+        on_open = "popout"
     }
 
 Any overrides to this table can be supplied in the setup function:

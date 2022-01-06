@@ -61,6 +61,7 @@ function M._setup_buffer(name, buf, tab)
     vim.api.nvim_buf_set_keymap(buf, "n", "d", ":LTDetailsSymboltree<CR>", opts)
     vim.api.nvim_buf_set_keymap(buf, "n", "H", ":LTHideSymboltree<CR>", opts)
     vim.api.nvim_buf_set_keymap(buf, "n", "X", ":LTCloseSymboltree<CR>", opts)
+    vim.api.nvim_buf_set_keymap(buf, "n", "<Esc>", ":LTClosePanelPopOut<CR>", opts)
     vim.api.nvim_buf_set_keymap(buf, "n", "?", ":lua require('litee.symboltree').help(true)<CR>", opts)
 	if config.map_resize_keys then
            lib_util_buf.map_resize_keys(panel_config.orientation, buf, opts)

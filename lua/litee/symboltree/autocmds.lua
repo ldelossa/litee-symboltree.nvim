@@ -1,8 +1,10 @@
 local lib_tree      = require('litee.lib.tree')
+local lib_lsp       = require('litee.lib.lsp')
 local lib_state     = require('litee.lib.state')
 local lib_autohi    = require('litee.lib.highlights.auto')
-local lib_util      = require('litee.lib.util')
 local lib_util_win  = require('litee.lib.util.window')
+
+local handlers      = require('litee.symboltree.handlers')
 
 local M = {}
 
@@ -74,7 +76,14 @@ M.refresh_symbol_tree = function()
     then
         return
     end
-    vim.lsp.buf.document_symbol()
+    local root = lib_tree.get_tree(ctx.state["symboltree"].tree).root
+    lib_lsp.multi_client_request(
+        ctx.state["symboltree"].active_lsp_clients,
+        'textDocument/documentSymbol',
+        {textDocument = { uri = root.location.uri}},
+        handlers.ds_refresh_handler(),
+        ctx.state["symboltree"].buf
+    )
 end
 
 -- auto_highlight will automatically highlight
@@ -103,56 +112,7 @@ end
 --
 -- this method is intended for use as an autocommand.
 M.source_tracking = function ()
-    local ctx = ui_req_ctx()
-    if ctx.state == nil then
-        return
-    end
-
-    if
-        ctx.state["symboltree"] == nil or
-        ctx.state["symboltree"].win == nil or
-        not vim.api.nvim_win_is_valid(ctx.state["symboltree"].win)
-        or lib_util_win.inside_component_win()
-    then
-        return
-    end
-
-    -- if there's a direct match for this line, use this
-    local cur_file = vim.fn.expand('%:p')
-    local t = lib_tree.get_tree(ctx.state["symboltree"].tree)
-
-    local source_map = t.source_line_map
-    if source_map == nil then
-        return
-    end
-    local source = source_map[ctx.linenr[1]]
-    if source ~= nil and source.uri == cur_file then
-            vim.api.nvim_win_set_cursor(ctx.state["symboltree"].win, {source.line, 0})
-            vim.cmd("redraw!")
-            return
-    end
-
-    -- no direct match for the line, so search for symbols with a range
-    -- interval overlapping our line number.
-    --
-    -- we search in reverse since code is written top down, allows
-    -- for source_tracking to handle nested elements correctly.
-    local buf_lines = t.buf_line_map
-    if buf_lines == nil then
-        return
-    end
----@diagnostic disable-next-line: redefined-local
-    for i=#buf_lines,1,-1 do
-        local node = buf_lines[i]
-        if (ctx.linenr[1] - 1) >= node.document_symbol.range["start"].line
-            and (ctx.linenr[1] - 1) <= node.document_symbol.range["end"].line
-                and cur_file == lib_util.absolute_path_from_uri(node.location.uri)
-        then
-            vim.api.nvim_win_set_cursor(ctx.state["symboltree"].win, {i, 0})
-            vim.cmd("redraw!")
-            return
-        end
-    end
+    handlers.source_tracking()
 end
 
 

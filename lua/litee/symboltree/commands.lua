@@ -2,6 +2,7 @@ local M = {}
 
 function M.setup()
     vim.cmd("command! LTOpenToSymboltree      lua require('litee.symboltree').open_to()")
+    vim.cmd("command! LTPopOutSymboltree     lua require('litee.symboltree').popout_to()")
     vim.cmd("command! LTCloseSymboltree       lua require('litee.symboltree').close_symboltree()")
     vim.cmd("command! LTNextSymboltree        lua require('litee.symboltree').navigation('n')")
     vim.cmd("command! LTPrevSymboltree        lua require('litee.symboltree').navigation('p')")
