@@ -7,6 +7,7 @@ local lib_util      = require('litee.lib.util')
 local lib_util_win  = require('litee.lib.util.window')
 local lib_notify    = require('litee.lib.notify')
 local lib_details   = require('litee.lib.details')
+local lib_hover     = require('litee.lib.lsp.hover')
 local lib_lsp       = require('litee.lib.lsp')
 
 local symboltree_buf        = require('litee.symboltree.buffer')
@@ -224,12 +225,12 @@ M.jump_symboltree = function(split)
     end
 
     if split == "split" or split == "vsplit" then
-        lib_jumps.jump_split(split, location, config.orientation, ctx.node)
+        lib_jumps.jump_split(split, location, ctx.node)
         return
     end
 
     if config.jump_mode == "neighbor" then
-        lib_jumps.jump_neighbor(location, config.orgientation, ctx.node)
+        lib_jumps.jump_neighbor(location, ctx.node)
         return
     end
 
