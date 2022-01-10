@@ -379,7 +379,7 @@ function M.setup(user_config)
     lib_panel.register_component("symboltree", pre_window_create, post_window_create)
 
     -- will keep the outline view up to date when moving around buffers.
-    vim.cmd([[au TextChanged,BufEnter,BufWritePost,WinEnter * lua require('litee.symboltree.autocmds').refresh_symbol_tree()]])
+    vim.cmd([[au CursorHold,TextChanged,BufEnter,BufWritePost,WinEnter * lua require('litee.symboltree.autocmds').refresh_symbol_tree()]])
     -- will enable symboltree ui tracking with source code lines.
     vim.cmd([[au CursorHold * lua require('litee.symboltree.autocmds').source_tracking()]])
 
