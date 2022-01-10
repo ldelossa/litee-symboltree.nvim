@@ -192,7 +192,7 @@ M.ds_lsp_handler = function()
         lib_tree.add_node(state.tree, root, nil, true)
 
         local cursor = nil
-        if vim.api.nvim_win_is_valid(state.win) then
+        if nil ~=state.win and vim.api.nvim_win_is_valid(state.win) then
             cursor = vim.api.nvim_win_get_cursor(state.win)
         end
 
