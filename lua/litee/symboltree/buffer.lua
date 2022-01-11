@@ -28,6 +28,7 @@ function M._setup_buffer(name, buf, tab)
     vim.api.nvim_buf_set_option(buf, 'textwidth', 0)
     vim.api.nvim_buf_set_option(buf, 'wrapmargin', 0)
 
+    vim.cmd("au BufEnter,WinEnter <buffer=" .. buf .. "> stopinsert")
     -- au to clear jump highlights on window close
     vim.cmd("au BufWinLeave <buffer=" .. buf .. "> lua require('litee.lib.jumps').set_jump_hl(false)")
 
