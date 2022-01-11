@@ -2,6 +2,7 @@ local lib_state         = require('litee.lib.state')
 local lib_panel         = require('litee.lib.panel')
 local lib_tree          = require('litee.lib.tree')
 local lib_tree_node     = require('litee.lib.tree.node')
+local lib_lsp           = require('litee.lib.lsp')
 local lib_util          = require('litee.lib.util')
 local lib_notify        = require('litee.lib.notify')
 local lib_util_win  = require('litee.lib.util.window')
@@ -55,7 +56,18 @@ function M.build_recursive_symbol_tree(depth, document_symbol, parent, prev_dept
         end
         if document_symbol.children ~= nil then
             for _, child_document_symbol in ipairs(document_symbol.children) do
-            M.build_recursive_symbol_tree(depth+1, child_document_symbol, node, prev_depth_table)
+                -- the LSP may return two types of data models, a SymbolInformation structure (legacy)
+                -- or a DocumentSymbol structure
+                -- if we detect the older "SymbolInformation" structure, lets convert it to a newer
+                -- DocumentSymbol structure.
+                if child_document_symbol.location ~= nil then
+                    child_document_symbol = lib_lsp.conv_symbolinfo_to_docsymbol(child_document_symbol)
+                    if child_document_symbol == nil then
+                        goto continue
+                    end
+                end
+                M.build_recursive_symbol_tree(depth+1, child_document_symbol, node, prev_depth_table)
+                ::continue::
             end
         end
         return node
