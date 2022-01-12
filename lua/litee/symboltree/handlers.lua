@@ -237,6 +237,7 @@ M.ds_lsp_handler = function()
                 lib_panel.popout_to("symboltree", global_state, M.source_tracking)
             else
                 lib_panel.toggle_panel(global_state, true, false)
+                vim.fn.win_gotoid(state.win)
             end
         end
 
