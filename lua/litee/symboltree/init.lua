@@ -311,7 +311,7 @@ function M.help(display)
         return
     end
     if display then
-        vim.api.nvim_win_set_buf(ctx.state["symboltree"].win, symboltree_help_buf.help_buffer)
+        vim.api.nvim_win_set_buf(ctx.state["symboltree"].win, symboltree_help_buf._setup_help_buffer(nil))
     else
         vim.api.nvim_win_set_buf(ctx.state["symboltree"].win, ctx.state["symboltree"].buf)
     end
