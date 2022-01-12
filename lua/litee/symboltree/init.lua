@@ -338,6 +338,21 @@ function M.dump_node()
     lib_tree.dump_tree(ctx.node)
 end
 
+local select_config_key = function(key, user_config, default_config)
+  local val = user_config[key]
+  local default_val = config[key]
+
+  if nil == val then
+    return default_val
+  end
+
+  if "table" ~= type(default_val) then
+    return val
+  end
+
+  return vim.tbl_extend("keep", val, default_val)
+end
+
 function M.setup(user_config)
     local function pre_window_create(state)
         local buf_name = "documentOutline"
@@ -367,7 +382,7 @@ function M.setup(user_config)
     -- merge in config
     if user_config ~= nil then
         for key, val in pairs(user_config) do
-          config[key] = "table" == type(config[key]) and nil ~= val and vim.tbl_extend("keep", val, config[key]) or val
+          config[key] = select_config_key(key, user_config, config)
         end
     end
 
