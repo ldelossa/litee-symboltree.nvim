@@ -342,12 +342,12 @@ local select_config_key = function(key, user_config, default_config)
   local val = user_config[key]
   local default_val = config[key]
 
-  if nil == val then
-    return default_val
-  end
-
   if "table" ~= type(default_val) then
     return val
+  end
+
+  if nil == val then
+    return nil
   end
 
   return vim.tbl_extend("keep", val, default_val)

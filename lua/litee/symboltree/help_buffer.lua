@@ -26,6 +26,9 @@ function M._setup_help_buffer(help_buf_handle)
             "",
             "KEYMAP:",
             "Global---------------------------------------------------------------------------------------------",
+            ("%-19s- resize the panel"):format("Up,Down,Right,Left"),
+        }
+        local configurable_mapping_lines = config.keymaps and {
             ("%-19s- expand a symbol"):format(config.keymaps.expand),
             ("%-19s- collapse a symbol"):format(config.keymaps.collapse),
             ("%-19s- collapse all symbols"):format(config.keymaps.collapse_all),
@@ -36,9 +39,11 @@ function M._setup_help_buffer(help_buf_handle)
             ("%-19s- show symbol details"):format(config.keymaps.details),
             ("%-19s- hide this element from the panel, will appear again on toggle"):format(config.keymaps.hide),
             ("%-19s- remove this element from the panel, will not appear until another LSP request"):format(config.keymaps.close),
-            ("%-19s- resize the panel"):format("Up,Down,Right,Left"),
             ("%-19s- show hover info for symbol"):format(config.keymaps.hover),
-        }
+        } or {}
+        for _, line in pairs(configurable_mapping_lines) do
+          table.insert(lines, line)
+        end
         vim.api.nvim_buf_set_lines(help_buf_handle, 0, #lines, false, lines)
     end
     -- set buf options
