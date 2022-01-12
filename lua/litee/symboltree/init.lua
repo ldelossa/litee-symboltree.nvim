@@ -350,6 +350,12 @@ local select_config_key = function(key, user_config, default_config)
     return nil
   end
 
+  if "table" ~= type(val) then
+    vim.notify(("%s must be a table. Using default values."):format(key), vim.log.levels.WARN)
+
+    return default_val
+  end
+
   return vim.tbl_extend("keep", val, default_val)
 end
 
