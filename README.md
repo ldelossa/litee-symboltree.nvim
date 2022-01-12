@@ -36,7 +36,7 @@ Plug:
 
 Call the setup function from anywhere you configure your plugins from.
 
-Configuration dictionary is explained in ./doc/litee.txt (:h litee-config)
+Configuration dictionary is explained in ./doc/litee-symboltree.txt (:h litee-symboltree-config)
 
 ```
 -- configure the litee.nvim library 
