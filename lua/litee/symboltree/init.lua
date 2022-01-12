@@ -367,7 +367,7 @@ function M.setup(user_config)
     -- merge in config
     if user_config ~= nil then
         for key, val in pairs(user_config) do
-            config[key] = val
+        config[key] = "table" == type(val) and vim.tbl_extend('keep', val, config[key]) or val
         end
     end
 
