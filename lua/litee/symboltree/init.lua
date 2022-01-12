@@ -346,7 +346,7 @@ local select_config_key = function(key, user_config, default_config)
     return val
   end
 
-  if nil == val then
+  if val == nil then
     return nil
   end
 
