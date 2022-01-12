@@ -47,18 +47,24 @@ require('litee.symboltree').setup({})
 
 ## Use it
 
-LITEE.nvim hooks directly into the LSP infrastructure by hijacking the necessary
+First ensure you also have the litee.nvim (https://github.com/ldelossa/litee.nvim) 
+library installed.
+
+litee-symboltree.nvim hooks directly into the LSP infrastructure by hijacking the necessary
 handlers like so:
 
     vim.lsp.handlers['textDocument/documentSymbol'] = vim.lsp.with(
                 require('litee.lsp.handlers').ws_lsp_handler(), {}
     )
 
-This occurs when `require('litee.symboltree` is called.
+This occurs when `require('litee.symboltree').setup()` is called.
 
-Once the handlers are in place issuing the normal "vim.lsp.buf.document_symbol" function will open the Symboltree UI.
+Once `require('litee.symboltree').setup()` is ran, the normal "vim.lsp.buf.document_symbol" function will open the Symboltree UI.
 
-All of LITEE.nvim can be controlled via commands making it possible to navigate
-the Symboltree via key bindings. 
+By default the Symboltree will open in a PopOut Panel, however this default is controlled by the "on_open" configuration
+flag and can be changed to open in a side panel instead. (see h: litee-symboltree-config).
+
+Once the Symboltree is open checkout (h: litee-symboltree-commands) to see all the available actions you can take on a Symboltree.
 
 Check out the help file for full details.
+

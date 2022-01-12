@@ -44,11 +44,6 @@ function M._setup_buffer(name, buf, tab)
         vim.cmd("au WinEnter <buffer=" .. buf .. "> lua require('litee.lib.util.buffer').hide_cursor(true)")
     end
 
-    if config.scrolloff then
-        vim.cmd("au WinLeave <buffer=" .. buf .. "> lua require('litee.lib.util.buffer').set_scrolloff(false)")
-        vim.cmd("au WinEnter <buffer=" .. buf .. "> lua require('litee.lib.util.buffer').set_scrolloff(true)")
-    end
-
     -- set buffer local keymaps
     local opts = {silent=true}
     vim.api.nvim_buf_set_keymap(buf, "n", "zo", ":LTExpandSymboltree<CR>", opts)
