@@ -243,10 +243,7 @@ end
 
 function M.navigation(dir)
     local ctx = ui_req_ctx()
-    if
-        ctx.state == nil or
-        ctx.state["symboltree"] == nil
-    then
+    if not M.is_open() then
         return
     end
 
@@ -269,10 +266,7 @@ end
 
 function M.hover_symboltree()
     local ctx = ui_req_ctx()
-    if
-        ctx.state == nil or
-        ctx.state["symboltree"] == nil
-    then
+    if not M.is_open() then
         lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
     end
@@ -291,22 +285,28 @@ end
 
 function M.details_symboltree()
     local ctx = ui_req_ctx()
-    if
-        ctx.state == nil or
-        ctx.state["symboltree"] == nil
-    then
+    if not M.is_open() then
         lib_notify.notify_popup_with_timeout("Must perform an document symbol LSP request first", 1750, "error")
         return
     end
     lib_details.details_popup(ctx.state, ctx.node, detail_func)
 end
 
-function M.help(display)
+function M.is_open()
     local ctx = ui_req_ctx()
     if
         ctx.state == nil or
         ctx.state["symboltree"] == nil
     then
+        return false
+    end
+
+    return true
+end
+
+function M.help(display)
+    local ctx = ui_req_ctx()
+    if not M.is_open() then
         lib_notify.notify_popup_with_timeout("Must open a symboltree first with LTOpensymboltree command", 1750, "error")
         return
     end
