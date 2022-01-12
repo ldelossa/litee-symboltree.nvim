@@ -46,19 +46,21 @@ function M._setup_buffer(name, buf, tab)
 
     -- set buffer local keymaps
     local opts = {silent=true}
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.expand, ":LTExpandSymboltree<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.collapse, ":LTCollapseSymboltree<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.collapse_all, ":LTCollapseAllSymboltree<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.jump, ":LTJumpSymboltree<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.jump_split, ":LTJumpSymboltreeSplit<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.jump_vsplit, ":LTJumpSymboltreeVSplit<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.jump_tab, ":LTJumpSymboltreeTab<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.hover, ":LTHoverSymboltree<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.details, ":LTDetailsSymboltree<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.hide, ":LTHideSymboltree<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.close, ":LTCloseSymboltree<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.close_panel_pop_out, ":LTClosePanelPopOut<CR>", opts)
-    vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.help, ":lua require('litee.symboltree').help(true)<CR>", opts)
+    if nil ~= config.keymaps then
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.expand, ":LTExpandSymboltree<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.collapse, ":LTCollapseSymboltree<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.collapse_all, ":LTCollapseAllSymboltree<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.jump, ":LTJumpSymboltree<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.jump_split, ":LTJumpSymboltreeSplit<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.jump_vsplit, ":LTJumpSymboltreeVSplit<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.jump_tab, ":LTJumpSymboltreeTab<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.hover, ":LTHoverSymboltree<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.details, ":LTDetailsSymboltree<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.hide, ":LTHideSymboltree<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.close, ":LTCloseSymboltree<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.close_panel_pop_out, ":LTClosePanelPopOut<CR>", opts)
+      vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.help, ":lua require('litee.symboltree').help(true)<CR>", opts)
+    end
 	if config.map_resize_keys then
            lib_util_buf.map_resize_keys(panel_config.orientation, buf, opts)
     end
