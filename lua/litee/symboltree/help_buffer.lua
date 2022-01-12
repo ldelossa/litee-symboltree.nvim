@@ -1,3 +1,5 @@
+local config = require('litee.symboltree.config').config
+
 local M = {}
 -- _setup_help_buffer performs an idempotent creation
 -- of the symboltree help buffer
@@ -24,18 +26,18 @@ function M._setup_help_buffer(help_buf_handle)
             "",
             "KEYMAP:",
             "Global---------------------------------------------------------------------------------------------",
-            "zo                 - expand a symbol",
-            "zc                 - collapse a symbol",
-            "zM                 - collapse all symbols",
-            "return             - jump to symbol",
-            "s                  - jump to symbol in a new split",
-            "v                  - jump to symbol in a new vsplit",
-            "t                  - jump to symbol in a new tab",
-            "d                  - show symbol details",
-            "H                  - hide this element from the panel, will appear again on toggle",
-            "x                  - remove this element from the panel, will not appear until another LSP request",
-            "Up,Down,Right,Left - resize the panel",
-            "i                  - show hover info for symbol",
+            ("%-19s- expand a symbol"):format(config.keymaps.expand),
+            ("%-19s- collapse a symbol"):format(config.keymaps.collapse),
+            ("%-19s- collapse all symbols"):format(config.keymaps.collapse_all),
+            ("%-19s- jump to symbol"):format(config.keymaps.jump),
+            ("%-19s- jump to symbol in a new split"):format(config.keymaps.jump_split),
+            ("%-19s- jump to symbol in a new vsplit"):format(config.keymaps.jump_vsplit),
+            ("%-19s- jump to symbol in a new tab"):format(config.keymaps.jump_tab),
+            ("%-19s- show symbol details"):format(config.keymaps.details),
+            ("%-19s- hide this element from the panel, will appear again on toggle"):format(config.keymaps.hide),
+            ("%-19s- remove this element from the panel, will not appear until another LSP request"):format(config.keymaps.close),
+            ("%-19s- resize the panel"):format("Up,Down,Right,Left"),
+            ("%-19s- show hover info for symbol"):format(config.keymaps.hover),
         }
         vim.api.nvim_buf_set_lines(help_buf_handle, 0, #lines, false, lines)
     end
