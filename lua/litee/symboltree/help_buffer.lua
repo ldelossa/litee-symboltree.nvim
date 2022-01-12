@@ -56,6 +56,4 @@ function M._setup_help_buffer(help_buf_handle)
     return help_buf_handle
 end
 
-M.help_buffer = M._setup_help_buffer(nil)
-
 return M
