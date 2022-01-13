@@ -63,27 +63,7 @@ end
 --
 -- autocommand is set in the calltree.lua module.
 M.refresh_symbol_tree = function()
-    local ctx = ui_req_ctx()
-    if ctx.state == nil then
-        return
-    end
-    if
-        ctx.state["symboltree"] == nil or
-        ctx.state["symboltree"].win == nil or
-        not vim.api.nvim_win_is_valid(ctx.state["symboltree"].win)
-        or lib_util_win.inside_component_win()
-        or #vim.lsp.get_active_clients() == 0
-    then
-        return
-    end
-    local params = { textDocument = vim.lsp.util.make_text_document_params() }
-    lib_lsp.multi_client_request(
-        ctx.state["symboltree"].active_lsp_clients,
-        'textDocument/documentSymbol',
-        params,
-        handlers.ds_refresh_handler(),
-        ctx.state["symboltree"].buf
-    )
+    handlers.refresh_symbol_tree()
 end
 
 -- auto_highlight will automatically highlight

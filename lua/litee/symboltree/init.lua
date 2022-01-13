@@ -15,7 +15,7 @@ local symboltree_help_buf   = require('litee.symboltree.help_buffer')
 local marshal_func          = require('litee.symboltree.marshal').marshal_func
 local detail_func           = require('litee.symboltree.details').details_func
 local config                = require('litee.symboltree.config').config
-local handlers              = require('litee.symboltree.handlers')
+local symboltree_au         = require('litee.symboltree.autocmds')
 
 local M = {}
 
@@ -89,7 +89,10 @@ function M.popout_to()
     then
         return
     end
-    lib_panel.popout_to("symboltree", ctx.state, handlers.source_tracking)
+    lib_panel.popout_to("symboltree", ctx.state, function() 
+        symboltree_au.refresh_symbol_tree()
+        symboltree_au.source_tracking()
+    end)
 end
 
 -- close_symboltree will close the symboltree ui in the current tab

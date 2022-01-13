@@ -143,6 +143,35 @@ M.ds_refresh_handler = function()
     end
 end
 
+-- refresh_symbol_tree is used as an autocommand and
+-- keeps the symboltree outline live while moving around
+-- buffers in a given tab.
+--
+-- autocommand is set in the calltree.lua module.
+M.refresh_symbol_tree = function()
+    local win    = vim.api.nvim_get_current_win()
+    local tab    = vim.api.nvim_win_get_tabpage(win)
+    local state       = lib_state.get_state(tab)
+    if
+        state == nil or
+        state["symboltree"] == nil or
+        state["symboltree"].win == nil or
+        not vim.api.nvim_win_is_valid(state["symboltree"].win)
+        or lib_util_win.inside_component_win()
+        or #vim.lsp.get_active_clients() == 0
+    then
+        return
+    end
+    local params = { textDocument = vim.lsp.util.make_text_document_params() }
+    lib_lsp.multi_client_request(
+        state["symboltree"].active_lsp_clients,
+        'textDocument/documentSymbol',
+        params,
+        M.ds_refresh_handler(),
+        state["symboltree"].buf
+    )
+end
+
 -- ds_lsp_handler handles the initial request for building
 -- a document symbols outline.
 M.ds_lsp_handler = function()
@@ -234,7 +263,10 @@ M.ds_lsp_handler = function()
             -- we have no state, so open up the panel or popout to create
             -- a window and buffer.
             if config.on_open == "popout" then
-                lib_panel.popout_to("symboltree", global_state, M.source_tracking)
+                lib_panel.popout_to("symboltree", global_state, function()
+                    M.refresh_symbol_tree()
+                    M.source_tracking()
+                end)
             else
                 lib_panel.toggle_panel(global_state, true, false)
             end
