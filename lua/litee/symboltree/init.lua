@@ -362,6 +362,24 @@ local select_config_key = function(key, user_config, default_config)
   return vim.tbl_extend("keep", val, default_val)
 end
 
+local function merge_configs(user_config)
+    -- merge keymaps
+    if user_config.keymaps ~= nil then
+        for k, v in pairs(user_config.keymaps) do
+            config.keymaps[k] = v
+        end
+    end
+
+    -- merge top levels
+    for k, v in pairs(user_config) do
+        if k == "keymaps" then
+            goto continue
+        end
+        config[k] = v
+        ::continue::
+    end
+end
+
 function M.setup(user_config)
     local function pre_window_create(state)
         local buf_name = "documentOutline"
@@ -390,9 +408,7 @@ function M.setup(user_config)
 
     -- merge in config
     if user_config ~= nil then
-        for key, val in pairs(user_config) do
-          config[key] = select_config_key(key, user_config, config)
-        end
+        merge_configs(user_config)
     end
 
     if not pcall(require, "litee.lib") then

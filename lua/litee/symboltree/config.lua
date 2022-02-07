@@ -7,6 +7,7 @@ M.config = {
     no_hls = false,
     auto_highlight = true,
     on_open = "popout",
+    disable_keymaps = false,
     keymaps = {
       expand = "zo",
       collapse = "zc",

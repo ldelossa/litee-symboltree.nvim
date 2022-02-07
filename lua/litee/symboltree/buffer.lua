@@ -46,7 +46,7 @@ function M._setup_buffer(name, buf, tab)
 
     -- set buffer local keymaps
     local opts = {silent=true}
-    if nil ~= config.keymaps then
+    if not config.disable_keymaps then 
       vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.expand, ":LTExpandSymboltree<CR>", opts)
       vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.collapse, ":LTCollapseSymboltree<CR>", opts)
       vim.api.nvim_buf_set_keymap(buf, "n", config.keymaps.collapse_all, ":LTCollapseAllSymboltree<CR>", opts)

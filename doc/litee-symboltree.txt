@@ -176,6 +176,8 @@ The config table is described below:
         -- Determines if initial creation of a symboltree opens in the
         -- Panel or in a Popout window. Options are "panel" or "popout"
         on_open = "popout",
+        -- If set to true, disables all keymaps
+        disable_keymaps = false,
         -- A keymap which will define buffer local key bindings for inside
         -- the Symboltree window.
         -- Set to nil to map no keybindings.

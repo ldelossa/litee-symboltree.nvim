@@ -1,8 +1,6 @@
 local lib_tree      = require('litee.lib.tree')
-local lib_lsp       = require('litee.lib.lsp')
 local lib_state     = require('litee.lib.state')
 local lib_autohi    = require('litee.lib.highlights.auto')
-local lib_util_win  = require('litee.lib.util.window')
 
 local handlers      = require('litee.symboltree.handlers')
 

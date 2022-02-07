@@ -20,29 +20,34 @@ function M._setup_help_buffer(help_buf_handle)
             return
         end
         help_buf_handle = buf
-        local lines = {
-            "SYMBOLTREE HELP:",
-            "press '?' to close",
-            "",
-            "KEYMAP:",
-            "Global---------------------------------------------------------------------------------------------",
-            ("%-19s- resize the panel"):format("Up,Down,Right,Left"),
-        }
-        local configurable_mapping_lines = config.keymaps and {
-            ("%-19s- expand a symbol"):format(config.keymaps.expand),
-            ("%-19s- collapse a symbol"):format(config.keymaps.collapse),
-            ("%-19s- collapse all symbols"):format(config.keymaps.collapse_all),
-            ("%-19s- jump to symbol"):format(config.keymaps.jump),
-            ("%-19s- jump to symbol in a new split"):format(config.keymaps.jump_split),
-            ("%-19s- jump to symbol in a new vsplit"):format(config.keymaps.jump_vsplit),
-            ("%-19s- jump to symbol in a new tab"):format(config.keymaps.jump_tab),
-            ("%-19s- show symbol details"):format(config.keymaps.details),
-            ("%-19s- hide this element from the panel, will appear again on toggle"):format(config.keymaps.hide),
-            ("%-19s- remove this element from the panel, will not appear until another LSP request"):format(config.keymaps.close),
-            ("%-19s- show hover info for symbol"):format(config.keymaps.hover),
-        } or {}
-        for _, line in pairs(configurable_mapping_lines) do
-          table.insert(lines, line)
+        local lines = {}
+        if not config.disable_keymaps then
+            lines = {
+                "FILETREE HELP:",
+                "press '?' to close",
+                "",
+                "KEYMAP:",
+                config.keymaps.expand .. " - expand a symbol",
+                config.keymaps.collapse .. " - collapse a symbol",
+                config.keymaps.collapse_all .. " - collapse all symbols",
+                config.keymaps.jump .. " - jump to a symbol in last used window",
+                config.keymaps.jump_split .. " - jump to symbol in a new split",
+                config.keymaps.jump_vsplit .. " - jump to symbol in a new vertical split",
+                config.keymaps.jump_tab .. " - jump to symbol in a new tab",
+                config.keymaps.hover .. " - show hover info for symbol",
+                config.keymaps.close .. " - close the symboltree component",
+                config.keymaps.details .. " - show symbol details",
+                config.keymaps.close_panel_pop_out .. " - close the popout panel when symboltree is popped out",
+                config.keymaps.help .. " - show help",
+                config.keymaps.hide .. " - hide the symboltree component",
+            }
+        else
+            lines = {
+                "FILETREE HELP:",
+                "press '?' to close",
+                "",
+                "No KEYMAP set:",
+            }
         end
         vim.api.nvim_buf_set_lines(help_buf_handle, 0, #lines, false, lines)
     end
