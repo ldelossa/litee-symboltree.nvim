@@ -23,7 +23,7 @@ function M._setup_help_buffer(help_buf_handle)
         local lines = {}
         if not config.disable_keymaps then
             lines = {
-                "FILETREE HELP:",
+                "SYMBOLTREE HELP:",
                 "press '?' to close",
                 "",
                 "KEYMAP:",
@@ -43,7 +43,7 @@ function M._setup_help_buffer(help_buf_handle)
             }
         else
             lines = {
-                "FILETREE HELP:",
+                "SYMBOLTREE HELP:",
                 "press '?' to close",
                 "",
                 "No KEYMAP set:",
