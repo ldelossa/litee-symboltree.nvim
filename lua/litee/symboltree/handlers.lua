@@ -21,7 +21,7 @@ local function keyify(document_symbol)
     end
 end
 
-function M.build_recursive_symbol_tree(depth, document_symbol, parent, prev_depth_table)
+function M.build_recursive_symbol_tree(depth, document_symbol, parent, prev_depth_table, target_node)
         local node = lib_tree_node.new_node(
             document_symbol.name,
             keyify(document_symbol),
@@ -66,11 +66,18 @@ function M.build_recursive_symbol_tree(depth, document_symbol, parent, prev_dept
                         goto continue
                     end
                 end
-                M.build_recursive_symbol_tree(depth+1, child_document_symbol, node, prev_depth_table)
+                local _, expand_parent = M.build_recursive_symbol_tree(depth+1, child_document_symbol, node, prev_depth_table, target_node)
+                if expand_parent and parent ~= nil then
+                    parent.expanded = true
+                end
                 ::continue::
             end
         end
-        return node
+        local expand_parent = false
+        if target_node ~= nil and target_node.key == node.key then
+            expand_parent = true
+        end
+        return node, true
 end
 
 M.ds_refresh_handler = function()
@@ -84,6 +91,7 @@ M.ds_refresh_handler = function()
 
         local cur_win = vim.api.nvim_get_current_win()
         local cur_tabpage = vim.api.nvim_win_get_tabpage(cur_win)
+        local cur_line = vim.api.nvim_win_get_cursor(cur_win)
 
         local state = lib_state.get_component_state(cur_tabpage, "symboltree")
         if state == nil then
@@ -91,10 +99,18 @@ M.ds_refresh_handler = function()
         end
 
         -- grab the previous depth table if it exists
+        -- grab the node under the cursor if we cant determine it.
         local prev_depth_table = nil
+        local target_node = nil
         local prev_tree = lib_tree.get_tree(state.tree)
         if prev_tree ~= nil then
             prev_depth_table = prev_tree.depth_table
+            if prev_tree.source_line_map ~= nil then
+                local source_to_buf = prev_tree.source_line_map[cur_line[1]]
+                if source_to_buf ~= nil then
+                    target_node = prev_tree.buf_line_map[source_to_buf.line]
+                end
+            end
         end
 
         -- create a synthetic document symbol to act as a root
@@ -111,7 +127,7 @@ M.ds_refresh_handler = function()
             detail = "file"
         }
 
-        local root = M.build_recursive_symbol_tree(0, synthetic_root_ds, nil, prev_depth_table)
+        local root = M.build_recursive_symbol_tree(0, synthetic_root_ds, nil, prev_depth_table, target_node)
 
         lib_tree.add_node(state.tree, root, nil, true)
 
