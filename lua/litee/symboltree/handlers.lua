@@ -140,6 +140,12 @@ M.ds_refresh_handler = function()
                 vim.api.nvim_win_set_cursor(state.win, cursor)
             end
        end
+
+        -- update invoking win
+        local tab = vim.api.nvim_get_current_tabpage()
+        if cur_win ~= state.win and not lib_util_win.is_component_win(tab, cur_win) then
+            state.invoking_win = cur_win
+        end
     end
 end
 
