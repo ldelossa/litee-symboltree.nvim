@@ -78,6 +78,9 @@ function M.open_to()
     then
         return
     end
+    if not lib_util_win.is_component_win(ctx.tab, vim.api.nvim_get_current_win()) then
+        ctx.state["symboltree"].invoking_win = vim.api.nvim_get_current_win()
+    end
     lib_panel.open_to("symboltree", ctx.state)
 end
 
@@ -88,6 +91,9 @@ function M.popout_to()
         ctx.state["symboltree"] == nil
     then
         return
+    end
+    if not lib_util_win.is_component_win(ctx.tab, vim.api.nvim_get_current_win()) then
+        ctx.state["symboltree"].invoking_win = vim.api.nvim_get_current_win()
     end
     lib_panel.popout_to("symboltree", ctx.state, function() 
         symboltree_au.refresh_symbol_tree()
