@@ -1,26 +1,16 @@
-local config = require('litee.symboltree.config').config
-local lib_icons = require('litee.lib.icons')
-
 local M = {}
 
 -- marshal_func is a function which returns the necessary
 -- values for marshalling a symboltree node into a buffer
 -- line.
 function M.marshal_func(node)
-    local icon_set = nil
-    if config.icon_set ~= nil then
-        icon_set = lib_icons[config.icon_set]
-    end
+    local icon_set = require('litee.symboltree').icon_set
     local name, detail, icon = "", "", ""
     if node.document_symbol ~= nil then
         name = node.document_symbol.name
         local kind = vim.lsp.protocol.SymbolKind[node.document_symbol.kind]
         if kind ~= "" then
-            if config.icon_set ~= nil then
-                icon = icon_set[kind]
-            else
-                icon = "[" .. kind .. "]"
-            end
+            icon = icon_set[kind] or  "[" .. kind .. "]"
         end
         if node.document_symbol.detail ~= nil then
             detail = node.document_symbol.detail
