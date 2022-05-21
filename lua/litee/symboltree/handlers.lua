@@ -275,6 +275,7 @@ M.ds_lsp_handler = function()
                 end)
             else
                 lib_panel.toggle_panel(global_state, true, false)
+                vim.fn.win_gotoid(state.win)
             end
         end
 
