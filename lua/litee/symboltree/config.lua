@@ -21,7 +21,7 @@ M.config = {
       close = "X",
       close_panel_pop_out = "<Esc>",
       help = "?",
-      hide = "q",
+      hide = "<C-[>",
     },
     icon_set = "default",
     icon_set_custom = nil,
